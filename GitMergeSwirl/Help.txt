@@ -1,0 +1,20 @@
+﻿Code First
+
+Open the PM Console
+
+# Don't think this is really required
+Install-Package ef-enum-to-lookup
+
+
+Add-Migration <name>
+Update-Database
+
+
+This Program interfaces to 
+ Git (Local Repo)
+ SQL (MSSSQL)
+ Jira (DB or WEB)
+ TeamCity (Bob)
+
+
+ To Create an neaw database on the local machine run PM>Update-Database
