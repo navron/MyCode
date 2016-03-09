@@ -47,7 +47,7 @@ namespace DevOps.GitMergeSwirl
 
             public List<PrivateBranchToReleaseBranch> ToReleaseBranch { get; set; }
 
-            // Tempaory Values
+            // Temporary Values
             [NotMapped]
             public bool InDatabase { get; set; } // Is this entry in the DB
             [NotMapped]

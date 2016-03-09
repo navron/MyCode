@@ -23,19 +23,19 @@ namespace DevOps.GitMergeSwirl
         private void buttonGitBranches_Click(object sender, EventArgs e)
         {
            var i = repo.GetBranches();
-            tbLog.AppendText(string.Format("Branch Count{0}",i));
+            tbLog.AppendText($"Branch Count{i}");
         }
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
-            tbLog.Text = String.Empty;
+            tbLog.Text = string.Empty;
         }
 
         private void buttonSHowBranchs_Click(object sender, EventArgs e)
         {
             foreach (var b in MainRunner.Instance.TheList)
             {
-                var t = String.Format("R:{0} Name:{1}", b.BranchType.ToString(), b.CanonicalName);
+                var t = $"R:{b.BranchType} Name:{b.CanonicalName}";
                 tbLog.AppendText(t + Environment.NewLine);
             }
         }
