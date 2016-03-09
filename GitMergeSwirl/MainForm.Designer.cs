@@ -73,7 +73,7 @@
             this.btnCheckGitBranches.TabIndex = 1;
             this.btnCheckGitBranches.Text = "Check Git Branches";
             this.btnCheckGitBranches.UseVisualStyleBackColor = true;
-            this.btnCheckGitBranches.Click += new System.EventHandler(this.buttonSetup_Click);
+            this.btnCheckGitBranches.Click += new System.EventHandler(this.btnCheckGitBranches_Click);
             // 
             // buttonClear
             // 

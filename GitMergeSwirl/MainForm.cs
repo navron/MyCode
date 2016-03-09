@@ -6,24 +6,26 @@ namespace DevOps.GitMergeSwirl
 {
     public partial class MainForm : Form
     {
-        private GitRepo repo;
-        private Config config;
+
 
         public MainForm()
         {
             InitializeComponent();
         }
 
-        private void buttonSetup_Click(object sender, EventArgs e)
+        private void btnCheckGitBranches_Click(object sender, EventArgs e)
         {
-            config = new Config();
-            repo = new GitRepo(config);
-        }
+            var watch = Stopwatch.StartNew();
+            MainRunner.Instance.SyncGitAndDBToMemory();
+            watch.Stop();
+            tbLog.AppendText($"Job SyncGitAndDBToMemory: in {watch.Elapsed}{Environment.NewLine}");
 
-        private void buttonGitBranches_Click(object sender, EventArgs e)
-        {
-           var i = repo.GetBranches();
-            tbLog.AppendText($"Branch Count{i}");
+            foreach (var branch in MainRunner.Instance.WorkingBranchList)
+            {
+                lbBranches.Items.Add(branch);
+            }
+            //     var i = repo.GetBranches();
+            //     tbLog.AppendText($"Branch Count{i}");
         }
 
         private void buttonClear_Click(object sender, EventArgs e)
@@ -33,22 +35,17 @@ namespace DevOps.GitMergeSwirl
 
         private void buttonSHowBranchs_Click(object sender, EventArgs e)
         {
-            foreach (var b in MainRunner.Instance.TheList)
-            {
-                var t = $"R:{b.BranchType} Name:{b.CanonicalName}";
-                tbLog.AppendText(t + Environment.NewLine);
-            }
-        }
-
-        private void buttonCreateDB_Click(object sender, EventArgs e)
-        {
-           
+            //foreach (var b in MainRunner.Instance.TheList)
+            //{
+            //    var t = $"R:{b.BranchType} Name:{b.CanonicalName}";
+            //    tbLog.AppendText(t + Environment.NewLine);
+            //}
         }
 
         private void buttonSycnBranches_Click(object sender, EventArgs e)
         {
             var watch = Stopwatch.StartNew();
-            MainRunner.Instance.SyncGitToDB();
+         //   MainRunner.Instance.SyncGitToDB();
             watch.Stop();
             tbLog.AppendText($"Find Done in {watch.Elapsed}{Environment.NewLine}");
 

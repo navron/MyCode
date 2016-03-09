@@ -52,7 +52,7 @@ namespace DevOps.GitMergeSwirl
                 //var c = branch.Commits;
             }
 
-            // limit to only Release nad Private for now
+            // limit to only Release and Private for now
             var wantedBranches = gb.Where(s => s.BranchType == DataModel.BranchType.Private || s.BranchType == DataModel.BranchType.Release).ToList();
 
             return wantedBranches;
