@@ -14,7 +14,10 @@ namespace DevOps.GitMergeSwirl
         public GitRepo Repo { get; private set; }
         public Config Config { get; private set; }
 
-        public List<DataModel.Branch> WorkingBranchList { get; private set; } 
+        public List<DataModel.Branch> WorkingBranchList { get; private set; }
+
+
+        public List<DataModel.ReleaseParentMappings> WorkingBranchToParentList { get; private set; }
 
         private MainRunner()
         {
@@ -110,7 +113,7 @@ namespace DevOps.GitMergeSwirl
 
     
 
-        public void FindReleaseParents()
+        public void FindBranchParents()
         {
             //var releaseBranchs = TheList.Where(s => s.BranchType == DataModel.BranchType.Release).ToList();
             //var privateBranchs = TheList.Where(s => s.BranchType == DataModel.BranchType.Private).ToList();

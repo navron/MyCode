@@ -83,9 +83,13 @@ namespace DevOps.GitMergeSwirl
 
         public class PrivateBranchToReleaseBranch
         {
+            // Each private (and Release branch) will be mapped to every Release Branch
+            // The ahead and behinds are used to 
+
             [Key]
             [Column(Order = 1)]
             public string PrivateBranchCanonicalName { get; set; } // Git Friendly Name
+
             [Key]
             [Column(Order = 2)]
             public string ReleaseBranchCanonicalName { get; set; } // Git Friendly Name
