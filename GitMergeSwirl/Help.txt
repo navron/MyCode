@@ -17,4 +17,4 @@ This Program interfaces to
  TeamCity (Bob)
 
 
- To Create an neaw database on the local machine run PM>Update-Database
+ To Create an new database on the local machine run PM>Update-Database

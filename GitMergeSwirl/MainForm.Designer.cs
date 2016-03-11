@@ -33,12 +33,16 @@
             this.buttonClear = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnCheckReleaseBranchState = new System.Windows.Forms.Button();
-            this.btnCheckBranchAheads = new System.Windows.Forms.Button();
+            this.btnRefreshList = new System.Windows.Forms.Button();
             this.btnSaveGitInfoToDB = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPageGitBranches = new System.Windows.Forms.TabPage();
             this.dataGridViewBranches = new System.Windows.Forms.DataGridView();
-            this.tabPageMergeTests = new System.Windows.Forms.TabPage();
+            this.tabPageParnetBranch = new System.Windows.Forms.TabPage();
+            this.gridViewPrivateParentBranch = new System.Windows.Forms.DataGridView();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
+            this.btnFindParentBranch = new System.Windows.Forms.Button();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
             this.btnRunCommand = new System.Windows.Forms.Button();
             this.tbRunCommand = new System.Windows.Forms.TextBox();
@@ -49,18 +53,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.labelDBServer = new System.Windows.Forms.Label();
             this.labelUserName = new System.Windows.Forms.Label();
-            this.gridViewPrivateParentBranch = new System.Windows.Forms.DataGridView();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.button3 = new System.Windows.Forms.Button();
-            this.btnFindParentBranch = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPageGitBranches.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBranches)).BeginInit();
-            this.tabPageMergeTests.SuspendLayout();
-            this.tabPageSettings.SuspendLayout();
+            this.tabPageParnetBranch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewPrivateParentBranch)).BeginInit();
             this.panel2.SuspendLayout();
+            this.tabPageSettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbLog
@@ -97,7 +97,7 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.btnCheckReleaseBranchState);
-            this.panel1.Controls.Add(this.btnCheckBranchAheads);
+            this.panel1.Controls.Add(this.btnRefreshList);
             this.panel1.Controls.Add(this.btnSaveGitInfoToDB);
             this.panel1.Controls.Add(this.btnCheckGitBranches);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -115,15 +115,15 @@
             this.btnCheckReleaseBranchState.Text = "Check Release State Order";
             this.btnCheckReleaseBranchState.UseVisualStyleBackColor = true;
             // 
-            // btnCheckBranchAheads
+            // btnRefreshList
             // 
-            this.btnCheckBranchAheads.Location = new System.Drawing.Point(331, 12);
-            this.btnCheckBranchAheads.Name = "btnCheckBranchAheads";
-            this.btnCheckBranchAheads.Size = new System.Drawing.Size(126, 23);
-            this.btnCheckBranchAheads.TabIndex = 7;
-            this.btnCheckBranchAheads.Text = "Check Ahead Behinds";
-            this.btnCheckBranchAheads.UseVisualStyleBackColor = true;
-            this.btnCheckBranchAheads.Click += new System.EventHandler(this.btnCheckBranchAheads_Click);
+            this.btnRefreshList.Location = new System.Drawing.Point(331, 12);
+            this.btnRefreshList.Name = "btnRefreshList";
+            this.btnRefreshList.Size = new System.Drawing.Size(126, 23);
+            this.btnRefreshList.TabIndex = 7;
+            this.btnRefreshList.Text = "Refresh List";
+            this.btnRefreshList.UseVisualStyleBackColor = true;
+            this.btnRefreshList.Click += new System.EventHandler(this.btnRefreshBranchList_Click);
             // 
             // btnSaveGitInfoToDB
             // 
@@ -134,12 +134,12 @@
             this.btnSaveGitInfoToDB.TabIndex = 6;
             this.btnSaveGitInfoToDB.Text = "Sycn To DB";
             this.btnSaveGitInfoToDB.UseVisualStyleBackColor = true;
-            this.btnSaveGitInfoToDB.Click += new System.EventHandler(this.buttonSycnBranches_Click);
+            this.btnSaveGitInfoToDB.Click += new System.EventHandler(this.btnSycnGitBranchesToDB_Click);
             // 
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabPageGitBranches);
-            this.tabControl.Controls.Add(this.tabPageMergeTests);
+            this.tabControl.Controls.Add(this.tabPageParnetBranch);
             this.tabControl.Controls.Add(this.tabPageSettings);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
@@ -169,17 +169,56 @@
             this.dataGridViewBranches.Size = new System.Drawing.Size(1225, 493);
             this.dataGridViewBranches.TabIndex = 8;
             // 
-            // tabPageMergeTests
+            // tabPageParnetBranch
             // 
-            this.tabPageMergeTests.Controls.Add(this.gridViewPrivateParentBranch);
-            this.tabPageMergeTests.Controls.Add(this.panel2);
-            this.tabPageMergeTests.Location = new System.Drawing.Point(4, 22);
-            this.tabPageMergeTests.Name = "tabPageMergeTests";
-            this.tabPageMergeTests.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMergeTests.Size = new System.Drawing.Size(1231, 545);
-            this.tabPageMergeTests.TabIndex = 1;
-            this.tabPageMergeTests.Text = "Merge Status";
-            this.tabPageMergeTests.UseVisualStyleBackColor = true;
+            this.tabPageParnetBranch.Controls.Add(this.gridViewPrivateParentBranch);
+            this.tabPageParnetBranch.Controls.Add(this.panel2);
+            this.tabPageParnetBranch.Location = new System.Drawing.Point(4, 22);
+            this.tabPageParnetBranch.Name = "tabPageParnetBranch";
+            this.tabPageParnetBranch.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageParnetBranch.Size = new System.Drawing.Size(1231, 545);
+            this.tabPageParnetBranch.TabIndex = 1;
+            this.tabPageParnetBranch.Text = "Parent Branch Status";
+            this.tabPageParnetBranch.UseVisualStyleBackColor = true;
+            // 
+            // gridViewPrivateParentBranch
+            // 
+            this.gridViewPrivateParentBranch.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridViewPrivateParentBranch.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridViewPrivateParentBranch.Location = new System.Drawing.Point(3, 49);
+            this.gridViewPrivateParentBranch.Name = "gridViewPrivateParentBranch";
+            this.gridViewPrivateParentBranch.Size = new System.Drawing.Size(1225, 493);
+            this.gridViewPrivateParentBranch.TabIndex = 10;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.button3);
+            this.panel2.Controls.Add(this.btnFindParentBranch);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(3, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1225, 46);
+            this.panel2.TabIndex = 9;
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Location = new System.Drawing.Point(1135, 12);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 6;
+            this.button3.Text = "Sycn To DB";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // btnFindParentBranch
+            // 
+            this.btnFindParentBranch.Location = new System.Drawing.Point(12, 12);
+            this.btnFindParentBranch.Name = "btnFindParentBranch";
+            this.btnFindParentBranch.Size = new System.Drawing.Size(120, 23);
+            this.btnFindParentBranch.TabIndex = 1;
+            this.btnFindParentBranch.Text = "Find Parent Branch";
+            this.btnFindParentBranch.UseVisualStyleBackColor = true;
+            this.btnFindParentBranch.Click += new System.EventHandler(this.btnFindParentBranch_Click);
             // 
             // tabPageSettings
             // 
@@ -274,45 +313,6 @@
             this.labelUserName.TabIndex = 0;
             this.labelUserName.Text = "Domain User Name";
             // 
-            // gridViewPrivateParentBranch
-            // 
-            this.gridViewPrivateParentBranch.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.gridViewPrivateParentBranch.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridViewPrivateParentBranch.Location = new System.Drawing.Point(3, 49);
-            this.gridViewPrivateParentBranch.Name = "gridViewPrivateParentBranch";
-            this.gridViewPrivateParentBranch.Size = new System.Drawing.Size(1225, 493);
-            this.gridViewPrivateParentBranch.TabIndex = 10;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.button3);
-            this.panel2.Controls.Add(this.btnFindParentBranch);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(3, 3);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1225, 46);
-            this.panel2.TabIndex = 9;
-            // 
-            // button3
-            // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(1135, 12);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 6;
-            this.button3.Text = "Sycn To DB";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // btnFindParentBranch
-            // 
-            this.btnFindParentBranch.Location = new System.Drawing.Point(12, 12);
-            this.btnFindParentBranch.Name = "btnFindParentBranch";
-            this.btnFindParentBranch.Size = new System.Drawing.Size(120, 23);
-            this.btnFindParentBranch.TabIndex = 1;
-            this.btnFindParentBranch.Text = "Find Parent Branch";
-            this.btnFindParentBranch.UseVisualStyleBackColor = true;
-            this.btnFindParentBranch.Click += new System.EventHandler(this.btnFindParentBranch_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -327,11 +327,11 @@
             this.tabControl.ResumeLayout(false);
             this.tabPageGitBranches.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBranches)).EndInit();
-            this.tabPageMergeTests.ResumeLayout(false);
-            this.tabPageSettings.ResumeLayout(false);
-            this.tabPageSettings.PerformLayout();
+            this.tabPageParnetBranch.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridViewPrivateParentBranch)).EndInit();
             this.panel2.ResumeLayout(false);
+            this.tabPageSettings.ResumeLayout(false);
+            this.tabPageSettings.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -344,11 +344,11 @@
         private System.Windows.Forms.Button buttonClear;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnSaveGitInfoToDB;
-        private System.Windows.Forms.Button btnCheckBranchAheads;
+        private System.Windows.Forms.Button btnRefreshList;
         private System.Windows.Forms.Button btnCheckReleaseBranchState;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabPageGitBranches;
-        private System.Windows.Forms.TabPage tabPageMergeTests;
+        private System.Windows.Forms.TabPage tabPageParnetBranch;
         private System.Windows.Forms.TabPage tabPageSettings;
         private System.Windows.Forms.TextBox tbRunCommand;
         private System.Windows.Forms.TextBox textBox3;

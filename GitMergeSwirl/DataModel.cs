@@ -20,53 +20,75 @@ namespace DevOps.GitMergeSwirl
             public BranchContext() : base("GitMerge") { }
 
             public DbSet<Branch> Branchs { get; set; }
+
             public DbSet<BranchCommit> BranchCommits { get; set; }
             public DbSet<BranchMergeTest> BranchMergeTests { get; set; }
             public DbSet<BranchMergeTestResult> BranchMergeTestResults { get; set; }
             public DbSet<ReleaseParentMapping> ReleaseParentMappings { get; set; }
             public DbSet<ChangeLog> ChangeLogs { get; set; }
 
-            public DbSet<PrivateBranchToReleaseBranch> ToReleaseBranches { get; set; }
-            
+            public DbSet<PrivateBranchToReleaseBranchMapping> PrivateBranchToReleaseBranchMappings { get; set; }
+
 
         }
 
         /// <summary>
-        /// 
+        /// Model of private and release branches
         /// </summary>
+        /// <remarks> Single entry per branch</remarks>
         public class Branch
         {
+            // Full name of an git branch, case sensitive, (git is non case sensitive, company policy is enforce case sensitive in branch names)
             [Key]
             public string CanonicalName { get; set; }
-            public string ShaTip { get; set; } // The Tip of the Branch
+            // Current Sha1, change to this value will cause NewCommitsOnBranch to be true
+            public string ShaTip { get; set; }
+            // Valid only for Private Branches, Null for Release branches types
             public string ReleaseParentCanonicalName { get; set; }
             public string ReleaseParentSha { get; set; }
             public virtual List<BranchCommit> Commits { get; set; }
             public BranchType BranchType { get; set; }
             public bool MergedTested { get; set; }
 
-            public List<PrivateBranchToReleaseBranch> ToReleaseBranch { get; set; }
+            // 
+            public List<PrivateBranchToReleaseBranchMapping> ToReleaseBranch { get; set; }
 
-            // Temporary Values
+
+            //  [NotMapped]
+            //   public bool RecordChanged { get; set; } // Is this entry in the DB
+
+
+
+
+            // Interdicts there been another commit on this branch since last run, and testing should be done again
+            [NotMapped]
+            public bool NewCommitsOnBranch { get; set; }
+
+            // Branch entry in database, Save will update existing entry
             [NotMapped]
             public bool InDatabase { get; set; } // Is this entry in the DB
-            [NotMapped]
-            public bool RecordChanged { get; set; } // Is this entry in the DB
-            [NotMapped]
-            public LibGit2Sharp.Branch GitBranch { get; set; } // reference to the Git Repo Commit Object
 
+            // Mark to remove database entry on next save (branch has been removed)
+            // [NotMapped]
+            // public bool RemovedFromDatabase { get; set; }
+
+            // Reference to the Git Repo Branch Object
+            [System.ComponentModel.Browsable(false)] // DataGridView Hide Value
             [NotMapped]
-            public LibGit2Sharp.Commit GitCommit { get; set; } // reference to the Git Repo Commit Object
+            public LibGit2Sharp.Branch GitBranch { get; set; }
+
+            // reference to the Git Repo Commit Object
+            [System.ComponentModel.Browsable(false)] // DataGridView Hide Value
             [NotMapped]
-            public bool BranchUpdated { get; set; } // Has there been another commit on this branch
-            [NotMapped]
-            public bool DeleteInDatabase { get; set; } // Mark to remove database entry
+            public LibGit2Sharp.Commit GitCommit { get; set; }
+
+
             public Branch()
             {
                 InDatabase = false;
-                DeleteInDatabase = false;
-                BranchUpdated = false;
-                RecordChanged = false;
+             //   RemovedFromDatabase = false;
+                NewCommitsOnBranch = false;
+                //    RecordChanged = false;
             }
 
         }
@@ -81,39 +103,60 @@ namespace DevOps.GitMergeSwirl
             public string JiraTaskId { get; set; }
         }
 
-        public class PrivateBranchToReleaseBranch
+        /// <summary>
+        ///  Private branch (and Release branch) mapping to every Release Branch
+        /// </summary>
+        /// <remarks> 
+        ///     Has a One to Many(Release Branch count) entries
+        ///     Class is used to determine the parent of the private branch
+        ///     Class is used to determine that the release branch are in correct mapping order as per the ReleaseParent Class.
+        /// </remarks>
+        public class PrivateBranchToReleaseBranchMapping
         {
-            // Each private (and Release branch) will be mapped to every Release Branch
-            // The ahead and behinds are used to 
-
+            // Primary Key (both private and release branch)
             [Key]
             [Column(Order = 1)]
             public string PrivateBranchCanonicalName { get; set; } // Git Friendly Name
 
+            // All Release Branches mapping back to the primary
             [Key]
             [Column(Order = 2)]
             public string ReleaseBranchCanonicalName { get; set; } // Git Friendly Name
 
+            // This is the commit that is most common to both branches,
+            // If the SHA1 is the same as an release branch then the private branch is from a clean branch off the release branch
+            public string BaseCommitSha { get; set; }
             [NotMapped]
             public LibGit2Sharp.Commit BaseCommit { get; set; }
-            public string BaseCommitSha { get; set; }
-            
 
-            public int? CommitCountToBaseCommit { get; set; }
+            // The ahead and behinds are used to determine which branch is the true 
             public int? Ahead { get; set; }
             public int? Behind { get; set; }
 
+            // Release or Private -- Used to limit data sets
+            public BranchType BranchType { get; set; }
         }
 
+        /// <summary>
+        /// Release Branch to Release Parent Mapping
+        /// </summary>
+        /// <remarks>
+        /// This Mapping is maintain outside this application (TODO, Add support for updating through this application)
+        /// 
+        /// 1. The Root Release Branch will have an "null" for an Parent Value
+        /// 2. Master is not store in this table (possible should be) and the Master branch is used as the last commit to, (bottom of the tree)
+        ///    The Parents of Master is determined by all Releases branches that is not a Parent Release. (i.e. loose leaves)
+        /// </remarks>
         public class ReleaseParentMapping
         {
             [Key]
             [Column(Order = 1)]
-            public string ReleaseName { get; set; } // Git Friendly Name
+            // Git Friendly Name, not the Canonical Name
+            public string ReleaseName { get; set; }
             [Key]
             [Column(Order = 2)]
-            public string ParentName { get; set; } // Git Friendly Name
-
+            // Git Friendly Name, not the Canonical Name
+            public string ParentName { get; set; }
         }
 
         /// <summary>
@@ -140,6 +183,7 @@ namespace DevOps.GitMergeSwirl
             public string ResultLog { get; set; }
         }
 
+        // Branch Type, Determined by Naming of an branch. 
         public enum BranchType
         {
             Release,

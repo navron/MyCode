@@ -1,34 +1,63 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 namespace DevOps.GitMergeSwirl
 {
     public partial class MainForm : Form
     {
-        private MainRunner runner;
+        private readonly MainRunner runner;
+
         public MainForm()
         {
             InitializeComponent();
             runner = MainRunner.Instance;
+
+            // This show all the column names
             dataGridViewBranches.DataSource = runner.WorkingBranchList;
+            gridViewPrivateParentBranch.DataSource = runner.WorkingBranchToParentList;
+
+            Console.SetOut(new ControlWriter(tbLog));
         }
 
-        private void btnCheckGitBranches_Click(object sender, EventArgs e)
-        {
-            var watch = Stopwatch.StartNew();
-            MainRunner.Instance.SyncGitAndDBToMemory();
-            watch.Stop();
-            tbLog.AppendText($"Job SyncGitAndDBToMemory: in {watch.Elapsed}{Environment.NewLine}");
-
-            dataGridViewBranches.DataSource = runner.WorkingBranchList;
-            tbLog.AppendText($"WorkingBranchList Count{runner.WorkingBranchList.Count}{Environment.NewLine}");
-        }
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
             tbLog.Text = string.Empty;
         }
+
+        #region TabPageGitBranches
+
+        private void btnCheckGitBranches_Click(object sender, EventArgs e)
+        {
+            MainRunner.Instance.SyncGitAndDBToMemory();
+            btnRefreshBranchList_Click(null, null);
+        }
+
+        private void btnRefreshBranchList_Click(object sender, EventArgs e)
+        {
+            dataGridViewBranches.DataSource = runner.WorkingBranchList;
+        }
+
+        private void btnSycnGitBranchesToDB_Click(object sender, EventArgs e)
+        {
+            runner.SyncInMemoryResultsToDB();
+        }
+
+        #endregion
+
+
+        #region TabPagParentBranchStatus
+
+        private void btnFindParentBranch_Click(object sender, EventArgs e)
+        {
+            runner.FindBranchParents();
+            gridViewPrivateParentBranch.DataSource = runner.WorkingBranchToParentList;
+        }
+        #endregion
 
         private void buttonSHowBranchs_Click(object sender, EventArgs e)
         {
@@ -39,29 +68,29 @@ namespace DevOps.GitMergeSwirl
             //}
         }
 
-        private void buttonSycnBranches_Click(object sender, EventArgs e)
-        {
-            var watch = Stopwatch.StartNew();
-            //   MainRunner.Instance.SyncGitToDB();
-            watch.Stop();
-            tbLog.AppendText($"Find Done in {watch.Elapsed}{Environment.NewLine}");
 
+
+
+    }
+
+    public class ControlWriter : TextWriter
+    {
+        private readonly Control textbox;
+        public ControlWriter(Control textbox)
+        {
+            this.textbox = textbox;
         }
 
-        private void btnCheckBranchAheads_Click(object sender, EventArgs e)
+        public override void Write(char value)
         {
-            var watch = Stopwatch.StartNew();
-            runner.FindBranchParents();
-            watch.Stop();
-            tbLog.AppendText($"Find Branch Parents: in {watch.Elapsed}{Environment.NewLine}");
+            textbox.Text += value;
         }
 
-        private void btnFindParentBranch_Click(object sender, EventArgs e)
+        public override void Write(string value)
         {
-            var watch = Stopwatch.StartNew();
-            runner.FindBranchParents();
-            watch.Stop();
-            tbLog.AppendText($"Find Parent Branches: in {watch.Elapsed}{Environment.NewLine}");
+            textbox.Text += value;
         }
+
+        public override Encoding Encoding => Encoding.ASCII;
     }
 }

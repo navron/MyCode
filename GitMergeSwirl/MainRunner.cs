@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace DevOps.GitMergeSwirl
@@ -17,7 +19,7 @@ namespace DevOps.GitMergeSwirl
         public List<DataModel.Branch> WorkingBranchList { get; private set; }
 
 
-        public List<DataModel.ReleaseParentMappings> WorkingBranchToParentList { get; private set; }
+        public List<DataModel.PrivateBranchToReleaseBranchMapping> WorkingBranchToParentList { get; private set; }
 
         private MainRunner()
         {
@@ -39,36 +41,42 @@ namespace DevOps.GitMergeSwirl
         /// </summary>
         public void SyncGitAndDBToMemory()
         {
+            var watch = Stopwatch.StartNew();
+
             var gitBranches = Repo.GetBranches(); // All Wanted and Current Git Branches
             var dbBranches = GetBranchesFromDB(); // All Current Branches form the database
 
+            // The current Git Branch set is Set of data we only with to work with, (any branch not in the current git set should be deleted)
             // Sync to the Database Set to the Git Repository Set
             foreach (var gitBranch in gitBranches)
             {
-                // Check that the Git Branch is in the Database Branch list
-                foreach (var dbBranch in dbBranches)
+                var dbBranch = dbBranches.FirstOrDefault(b => b.CanonicalName == gitBranch.CanonicalName);
+                if (dbBranch == null) // not in Database
                 {
-                    if (gitBranch.CanonicalName != dbBranch.CanonicalName) continue;
-                    gitBranch.InDatabase = true;
-
-                    // Are the Tips the same, When false all Merge testing must be done again
-                    gitBranch.BranchUpdated = (dbBranch.ShaTip == gitBranch.ShaTip);
+                    gitBranch.NewCommitsOnBranch = true; // New Branch is always 
                 }
-                // If not in database Do Add Stuff
-                if (!gitBranch.InDatabase)
+                else // Exist in database, check that the commit is the same
                 {
-
+                    gitBranch.InDatabase = true;
+                    // Are the Tips the same, When false all Merge testing must be done again
+                    gitBranch.NewCommitsOnBranch = (dbBranch.ShaTip == gitBranch.ShaTip);
                 }
             }
 
+            // Case the  Repo.GetBranches returns all branches then limit the working result to the branch types here
+            // WorkingBranchList = gitBranches.Where(s => s.BranchType == DataModel.BranchType.Private || s.BranchType == DataModel.BranchType.Release).ToList();
             WorkingBranchList = gitBranches;
-//            TheList = gitBranches.Where(s => s.BranchType == DataModel.BranchType.Private || s.BranchType == DataModel.BranchType.Release).ToList();
+
+            var s = $"SyncGitAndDBToMemory:{watch.Elapsed}, Release Branches:{gitBranches.Count(r => r.BranchType == DataModel.BranchType.Release)}";
+            s += $", Private Branches:{gitBranches.Count(p => p.BranchType == DataModel.BranchType.Private)}, Total:{gitBranches.Count()}";
+            Console.WriteLine(s);
         }
 
-        public void SycnToDB()
+        public void SyncInMemoryResultsToDB()
         {
-                   // Create a list of dbBranches Names that need to be deleted
-            //var collectForDeletion = new List<string>();  // CanonicalName
+           // var dbBranches = GetBranchesFromDB(); // Current Branches
+            // Create a list of dbBranches Names that need to be deleted
+         //   var collectForDeletion = new List<string>();  // CanonicalName
             //foreach (var dbBranch in dbBranches)
             //{
             //    var found = gitBranches.Any(b => b.CanonicalName == dbBranch.CanonicalName);
@@ -78,7 +86,27 @@ namespace DevOps.GitMergeSwirl
             //    }
             //}
 
-            //using (var db = new DataModel.BranchContext())
+            using (var db = new DataModel.BranchContext())
+            {
+                // Check that the branch does not existing in the working branch list and removed it if needed
+                foreach (var dbBranch in db.Branchs)
+                {
+                    if (WorkingBranchList.All(b => b.CanonicalName != dbBranch.CanonicalName))
+                    {
+                        db.Branchs.Remove(dbBranch);
+                    }
+                }
+
+                // Add new Branches
+                var newBranches = WorkingBranchList.Where(s => s.InDatabase == false).ToList();
+                db.Branchs.AddRange(newBranches);
+
+                // Ingoring updated values for now (Don't know how to save these yet)
+                var updatedBranches = WorkingBranchList.Where(s => s.NewCommitsOnBranch == false);
+
+                db.SaveChanges();
+
+            }
             //{
             //    foreach (string canonicalName in collectForDeletion)
             //    {
@@ -104,7 +132,7 @@ namespace DevOps.GitMergeSwirl
             //    db.Branchs.AddRange(newBranches);
 
             //    // Ingoring updated values for now
-            //    var updatedBranches = wantedBranches.Where(s => s.BranchUpdated == false);
+            //    var updatedBranches = wantedBranches.Where(s => s.NewCommitsOnBranch == false);
             //    //update branches need any testing re done
 
             //    db.SaveChanges(); // Sync Console App
@@ -130,26 +158,26 @@ namespace DevOps.GitMergeSwirl
             //}
 
 
-            using (var db = new DataModel.BranchContext())
-            {
-                //foreach (var privateBranch in privateBranchs)
-                //{
-                //    Repo.FindReleaseParentForPrivateBranch(privateBranch, releaseBranchs);
-                //    db.Branchs.Attach(privateBranch);
-                //    db.ToReleaseBranches.AddRange(privateBranch.ToReleaseBranch);
-                //}
+            //using (var db = new DataModel.BranchContext())
+            //{
+            //    //foreach (var privateBranch in privateBranchs)
+            //    //{
+            //    //    Repo.FindReleaseParentForPrivateBranch(privateBranch, releaseBranchs);
+            //    //    db.Branchs.Attach(privateBranch);
+            //    //    db.ToReleaseBranches.AddRange(privateBranch.ToReleaseBranch);
+            //    //}
 
 
-                ////    db.Branchs.Attach(testBranch);
-                //db.Entry(testBranch).State = EntityState.Modified;
-                //  testBranch.MergedTested = true;
+            //    ////    db.Branchs.Attach(testBranch);
+            //    //db.Entry(testBranch).State = EntityState.Modified;
+            //    //  testBranch.MergedTested = true;
 
-                //db.ToReleaseBranches.AddRange(testBranch.ToReleaseBranch);
+            //    //db.ToReleaseBranches.AddRange(testBranch.ToReleaseBranch);
 
 
 
-                db.SaveChanges();
-            }
+            //    db.SaveChanges();
+            //}
         }
 
         private List<DataModel.Branch> GetBranchesFromDB()

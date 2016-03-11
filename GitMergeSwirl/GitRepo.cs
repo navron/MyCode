@@ -74,20 +74,20 @@ namespace DevOps.GitMergeSwirl
         {
             var commitLog = repo.Commits;
 
-            privateBranch.ToReleaseBranch = new List<DataModel.PrivateBranchToReleaseBranch>();
+            privateBranch.ToReleaseBranch = new List<DataModel.PrivateBranchToReleaseBranchMapping>();
 
 
             foreach (var releaseBranch in releaseBranches)
             {
                 //  if(!releaseBranch.CanonicalName.Contains("2012.1")) continue; // TEST
 
-                var b = new DataModel.PrivateBranchToReleaseBranch();
+                var b = new DataModel.PrivateBranchToReleaseBranchMapping();
                 b.BaseCommit = repo.ObjectDatabase.FindMergeBase(privateBranch.GitCommit, releaseBranch.GitCommit);
                 b.BaseCommitSha = b.BaseCommit.Sha; // Store in DB
                 b.PrivateBranchCanonicalName = privateBranch.CanonicalName;
                 b.ReleaseBranchCanonicalName = releaseBranch.CanonicalName;
 
-                privateBranch.RecordChanged = true;
+            //    privateBranch.RecordChanged = true;
 
 
                 var pBranch = privateBranch.GitBranch;
