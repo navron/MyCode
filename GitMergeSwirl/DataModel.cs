@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
+using System.Linq;
 
 namespace DevOps.GitMergeSwirl
 {
@@ -36,7 +37,7 @@ namespace DevOps.GitMergeSwirl
         /// Model of private and release branches
         /// </summary>
         /// <remarks> Single entry per branch</remarks>
-        public class Branch
+        public class Branch //: IComparable
         {
             // Full name of an git branch, case sensitive, (git is non case sensitive, company policy is enforce case sensitive in branch names)
             [Key]
@@ -54,11 +55,6 @@ namespace DevOps.GitMergeSwirl
             public List<PrivateBranchToReleaseBranchMapping> ToReleaseBranch { get; set; }
 
 
-            //  [NotMapped]
-            //   public bool RecordChanged { get; set; } // Is this entry in the DB
-
-
-
 
             // Interdicts there been another commit on this branch since last run, and testing should be done again
             [NotMapped]
@@ -67,6 +63,12 @@ namespace DevOps.GitMergeSwirl
             // Branch entry in database, Save will update existing entry
             [NotMapped]
             public bool InDatabase { get; set; } // Is this entry in the DB
+
+
+            //[NotMapped]
+            //// Flag this record 
+            //public bool RecordChanged { get; set; } // Is this entry in the DB
+
 
             // Mark to remove database entry on next save (branch has been removed)
             // [NotMapped]
@@ -86,11 +88,45 @@ namespace DevOps.GitMergeSwirl
             public Branch()
             {
                 InDatabase = false;
-             //   RemovedFromDatabase = false;
+                //   RemovedFromDatabase = false;
                 NewCommitsOnBranch = false;
                 //    RecordChanged = false;
             }
 
+           
+            public bool IsEqual(Branch other)
+            {
+                if (other.ToReleaseBranch != null)
+                {
+                    var test = other.ToReleaseBranch.Any(r => r.RecordUpdate == true);
+                    if (test) return false;
+                }
+
+                return string.Equals(CanonicalName, other.CanonicalName) &&
+                       string.Equals(ShaTip, other.ShaTip) &&
+                       string.Equals(ReleaseParentCanonicalName, other.ReleaseParentCanonicalName) &&
+                       string.Equals(ReleaseParentSha, other.ReleaseParentSha) ;
+                // Equals(Commits, other.Commits) &&
+                // BranchType == other.BranchType && MergedTested == other.MergedTested &&
+                // Equals(ToReleaseBranch, other.ToReleaseBranch) &&
+                // NewCommitsOnBranch == other.NewCommitsOnBranch &&
+                // InDatabase == other.InDatabase && 
+                // Equals(GitBranch, other.GitBranch) &&
+                // Equals(GitCommit, other.GitCommit);
+            }
+
+            
+                // What shoudl this mehtod be call, standard
+            public void AssignValue(Branch branch)
+            {
+                this.ShaTip = branch.ShaTip;
+                this.ReleaseParentCanonicalName = branch.ReleaseParentCanonicalName;
+                this.ReleaseParentSha = branch.ReleaseParentSha;
+                // this.Commits // Not this one 
+                this.MergedTested = branch.MergedTested;
+                this.ToReleaseBranch = branch.ToReleaseBranch;
+
+            }
         }
 
         public class BranchCommit
@@ -123,18 +159,36 @@ namespace DevOps.GitMergeSwirl
             [Column(Order = 2)]
             public string ReleaseBranchCanonicalName { get; set; } // Git Friendly Name
 
+            public string PrivateBranchSha { get; set; }
+
+            public string ReleaseBranchSha { get; set; }
+
+            [NotMapped]
+            public bool RecordUpdate { get; set; }
+
+
+            // The ahead and behinds are used to determine which branch is the true 
+            public int? Ahead { get; set; }
+            public int? Behind { get; set; }
+
             // This is the commit that is most common to both branches,
             // If the SHA1 is the same as an release branch then the private branch is from a clean branch off the release branch
             public string BaseCommitSha { get; set; }
             [NotMapped]
             public LibGit2Sharp.Commit BaseCommit { get; set; }
 
-            // The ahead and behinds are used to determine which branch is the true 
-            public int? Ahead { get; set; }
-            public int? Behind { get; set; }
+
+            public int? BaseAhead { get; set; }
+            public int? BaseBehind { get; set; }
+
 
             // Release or Private -- Used to limit data sets
             public BranchType BranchType { get; set; }
+
+            public PrivateBranchToReleaseBranchMapping()
+            {
+                RecordUpdate = false;
+            }
         }
 
         /// <summary>
@@ -191,6 +245,14 @@ namespace DevOps.GitMergeSwirl
             Archive,
             MergeTest,
             Other
+        }
+
+        public static BranchType SetBranchType(string branchCanonicalName)
+        {
+            if (branchCanonicalName.Contains(@"/heads/private/")) return DataModel.BranchType.Private;
+            if (branchCanonicalName.Contains(@"/heads/releases/")) return DataModel.BranchType.Release;
+
+            return DataModel.BranchType.Other;
         }
 
         public class ChangeLog

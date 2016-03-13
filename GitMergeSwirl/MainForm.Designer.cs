@@ -32,6 +32,7 @@
             this.btnCheckGitBranches = new System.Windows.Forms.Button();
             this.buttonClear = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.bntFindParentBranch = new System.Windows.Forms.Button();
             this.btnCheckReleaseBranchState = new System.Windows.Forms.Button();
             this.btnRefreshList = new System.Windows.Forms.Button();
             this.btnSaveGitInfoToDB = new System.Windows.Forms.Button();
@@ -41,6 +42,7 @@
             this.tabPageParnetBranch = new System.Windows.Forms.TabPage();
             this.gridViewPrivateParentBranch = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnShowParentBranch = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.btnFindParentBranch = new System.Windows.Forms.Button();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
@@ -96,6 +98,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.bntFindParentBranch);
             this.panel1.Controls.Add(this.btnCheckReleaseBranchState);
             this.panel1.Controls.Add(this.btnRefreshList);
             this.panel1.Controls.Add(this.btnSaveGitInfoToDB);
@@ -105,6 +108,16 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1225, 46);
             this.panel1.TabIndex = 6;
+            // 
+            // bntFindParentBranch
+            // 
+            this.bntFindParentBranch.Location = new System.Drawing.Point(477, 12);
+            this.bntFindParentBranch.Name = "bntFindParentBranch";
+            this.bntFindParentBranch.Size = new System.Drawing.Size(126, 23);
+            this.bntFindParentBranch.TabIndex = 9;
+            this.bntFindParentBranch.Text = "Find Parent Branch";
+            this.bntFindParentBranch.UseVisualStyleBackColor = true;
+            this.bntFindParentBranch.Click += new System.EventHandler(this.bntFindParentBranch_Click);
             // 
             // btnCheckReleaseBranchState
             // 
@@ -166,6 +179,7 @@
             this.dataGridViewBranches.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewBranches.Location = new System.Drawing.Point(3, 49);
             this.dataGridViewBranches.Name = "dataGridViewBranches";
+            this.dataGridViewBranches.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewBranches.Size = new System.Drawing.Size(1225, 493);
             this.dataGridViewBranches.TabIndex = 8;
             // 
@@ -187,11 +201,13 @@
             this.gridViewPrivateParentBranch.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridViewPrivateParentBranch.Location = new System.Drawing.Point(3, 49);
             this.gridViewPrivateParentBranch.Name = "gridViewPrivateParentBranch";
+            this.gridViewPrivateParentBranch.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.gridViewPrivateParentBranch.Size = new System.Drawing.Size(1225, 493);
             this.gridViewPrivateParentBranch.TabIndex = 10;
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btnShowParentBranch);
             this.panel2.Controls.Add(this.button3);
             this.panel2.Controls.Add(this.btnFindParentBranch);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
@@ -199,6 +215,16 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1225, 46);
             this.panel2.TabIndex = 9;
+            // 
+            // btnShowParentBranch
+            // 
+            this.btnShowParentBranch.Location = new System.Drawing.Point(149, 12);
+            this.btnShowParentBranch.Name = "btnShowParentBranch";
+            this.btnShowParentBranch.Size = new System.Drawing.Size(120, 23);
+            this.btnShowParentBranch.TabIndex = 7;
+            this.btnShowParentBranch.Text = "Show Parent Branch";
+            this.btnShowParentBranch.UseVisualStyleBackColor = true;
+            this.btnShowParentBranch.Click += new System.EventHandler(this.btnShowParentBranch_Click);
             // 
             // button3
             // 
@@ -364,6 +390,8 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button btnFindParentBranch;
+        private System.Windows.Forms.Button bntFindParentBranch;
+        private System.Windows.Forms.Button btnShowParentBranch;
     }
 }
 
