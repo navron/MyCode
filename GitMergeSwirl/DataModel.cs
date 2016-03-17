@@ -47,13 +47,14 @@ namespace DevOps.GitMergeSwirl
             // Valid only for Private Branches, Null for Release branches types
             public string ReleaseParentCanonicalName { get; set; }
             public string ReleaseParentSha { get; set; }
-            public virtual List<BranchCommit> Commits { get; set; }
+   
             public BranchType BranchType { get; set; }
             public bool MergedTested { get; set; }
 
-            // 
-            public List<PrivateBranchToReleaseBranchMapping> ToReleaseBranch { get; set; }
+            // just change to virtual
+            public virtual List<PrivateBranchToReleaseBranchMapping> ToReleaseBranch { get; set; }
 
+            public virtual List<BranchCommit> Commits { get; set; }
 
 
             // Interdicts there been another commit on this branch since last run, and testing should be done again
