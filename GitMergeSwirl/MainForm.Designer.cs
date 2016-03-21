@@ -55,6 +55,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.labelDBServer = new System.Windows.Forms.Label();
             this.labelUserName = new System.Windows.Forms.Label();
+            this.btnSetParnetBranch = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPageGitBranches.SuspendLayout();
@@ -98,6 +99,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnSetParnetBranch);
             this.panel1.Controls.Add(this.bntFindParentBranch);
             this.panel1.Controls.Add(this.btnCheckReleaseBranchState);
             this.panel1.Controls.Add(this.btnRefreshList);
@@ -339,6 +341,16 @@
             this.labelUserName.TabIndex = 0;
             this.labelUserName.Text = "Domain User Name";
             // 
+            // btnSetParnetBranch
+            // 
+            this.btnSetParnetBranch.Location = new System.Drawing.Point(649, 12);
+            this.btnSetParnetBranch.Name = "btnSetParnetBranch";
+            this.btnSetParnetBranch.Size = new System.Drawing.Size(126, 23);
+            this.btnSetParnetBranch.TabIndex = 10;
+            this.btnSetParnetBranch.Text = "Set Parent Branch";
+            this.btnSetParnetBranch.UseVisualStyleBackColor = true;
+            this.btnSetParnetBranch.Click += new System.EventHandler(this.btnSetParnetBranch_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -392,6 +404,7 @@
         private System.Windows.Forms.Button btnFindParentBranch;
         private System.Windows.Forms.Button bntFindParentBranch;
         private System.Windows.Forms.Button btnShowParentBranch;
+        private System.Windows.Forms.Button btnSetParnetBranch;
     }
 }
 

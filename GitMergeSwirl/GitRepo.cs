@@ -133,15 +133,8 @@ namespace DevOps.GitMergeSwirl
                 var divbase = repo.ObjectDatabase.CalculateHistoryDivergence(pBranch.Tip, test.BaseCommit);
                 test.BaseAhead = divbase.AheadBy;
                 test.BaseBehind = divbase.BehindBy;
-
-
-
                 privateBranch.ToReleaseBranch.Add(test);
-
             }
-
-          
-
         }
     }
 

@@ -103,6 +103,11 @@ namespace DevOps.GitMergeSwirl
 
             gridViewPrivateParentBranch.DataSource = parentList;
         }
+
+        private void btnSetParnetBranch_Click(object sender, EventArgs e)
+        {
+            runner.SetParentBranch();
+        }
     }
 
     public class ControlWriter : TextWriter

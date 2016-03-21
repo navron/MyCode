@@ -126,7 +126,7 @@ namespace DevOps.GitMergeSwirl
                 foreach (var dbBranch in db.Branchs)
                 {
                     var gitbranch = WorkingBranchList.FirstOrDefault(b => b.CanonicalName == dbBranch.CanonicalName);
-                    if (gitbranch == null) continue; // Should alway find a record
+                    if (gitbranch == null) continue; // Should always find a record
                     if (dbBranch.IsEqual(gitbranch))
                     {
                         dbBranch.AssignValue(gitbranch);
@@ -200,6 +200,21 @@ namespace DevOps.GitMergeSwirl
             //}
         }
 
+        public void SetParentBranch()
+        {
+            foreach (var branch in WorkingBranchList)
+            {
+                if(branch.ToReleaseBranch == null || branch.ToReleaseBranch.Count == 0) continue;
+                
+                // sort to Release Branch by Ahead then Behind (Take lowest of both)
+
+                var b = branch.ToReleaseBranch;
+                b.Sort();
+                var e = b.First();
+                branch.ReleaseParentCanonicalName = e.ReleaseBranchCanonicalName;
+                branch.ReleaseParentSha = e.ReleaseBranchSha;
+            }
+        }
 
 
         public void FindBranchParents(DataModel.Branch branch)

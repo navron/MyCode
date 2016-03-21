@@ -6,9 +6,9 @@
     {
         public string dbsvr = @".";
         public string dbusr = @"sa";
-        public string dbpwd = @"Ibycgtpw!";
+        public string dbpwd = @"";
 
-        public string gitRepoPath = @"z:\streams.git";
+        public string gitRepoPath = @"C:\Git\streams.git";
 
     }
 }

@@ -148,7 +148,7 @@ namespace DevOps.GitMergeSwirl
         ///     Class is used to determine the parent of the private branch
         ///     Class is used to determine that the release branch are in correct mapping order as per the ReleaseParent Class.
         /// </remarks>
-        public class PrivateBranchToReleaseBranchMapping
+        public class PrivateBranchToReleaseBranchMapping : IComparable
         {
             // Primary Key (both private and release branch)
             [Key]
@@ -189,6 +189,22 @@ namespace DevOps.GitMergeSwirl
             public PrivateBranchToReleaseBranchMapping()
             {
                 RecordUpdate = false;
+            }
+
+            public int CompareTo(object obj)
+            {
+                var other = (PrivateBranchToReleaseBranchMapping) obj;
+                if(! (Ahead.HasValue && Behind.HasValue &&
+                    other.Ahead.HasValue && other.Behind.HasValue))
+                {
+                    return 0;
+                }
+
+                if (Ahead == other.Ahead)
+                {
+                    return Behind.Value.CompareTo(other.Behind.Value);
+                }
+                return Ahead.Value.CompareTo(other.Ahead.Value);
             }
         }
 
