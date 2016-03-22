@@ -99,58 +99,6 @@
     <Compile Include="Migrations\201602180459545_AddChangeLog.Designer.cs">
       <DependentUpon>201602180459545_AddChangeLog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201602180548306_Test1.cs" />
-    <Compile Include="Migrations\201602180548306_Test1.Designer.cs">
-      <DependentUpon>201602180548306_Test1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602180605481_Test2.cs" />
-    <Compile Include="Migrations\201602180605481_Test2.Designer.cs">
-      <DependentUpon>201602180605481_Test2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602190006006_TEst3.cs" />
-    <Compile Include="Migrations\201602190006006_TEst3.Designer.cs">
-      <DependentUpon>201602190006006_TEst3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602190018490_T1.cs" />
-    <Compile Include="Migrations\201602190018490_T1.Designer.cs">
-      <DependentUpon>201602190018490_T1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602190140072_t2.cs" />
-    <Compile Include="Migrations\201602190140072_t2.Designer.cs">
-      <DependentUpon>201602190140072_t2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602190221327_t21.cs" />
-    <Compile Include="Migrations\201602190221327_t21.Designer.cs">
-      <DependentUpon>201602190221327_t21.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602190222278_t3.cs" />
-    <Compile Include="Migrations\201602190222278_t3.Designer.cs">
-      <DependentUpon>201602190222278_t3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602190230535_t4.cs" />
-    <Compile Include="Migrations\201602190230535_t4.Designer.cs">
-      <DependentUpon>201602190230535_t4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602190423354_t41.cs" />
-    <Compile Include="Migrations\201602190423354_t41.Designer.cs">
-      <DependentUpon>201602190423354_t41.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603110424497_t5.cs" />
-    <Compile Include="Migrations\201603110424497_t5.Designer.cs">
-      <DependentUpon>201603110424497_t5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603120505133_t6.cs" />
-    <Compile Include="Migrations\201603120505133_t6.Designer.cs">
-      <DependentUpon>201603120505133_t6.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603120517352_t7.cs" />
-    <Compile Include="Migrations\201603120517352_t7.Designer.cs">
-      <DependentUpon>201603120517352_t7.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603210214209_t8.cs" />
-    <Compile Include="Migrations\201603210214209_t8.Designer.cs">
-      <DependentUpon>201603210214209_t8.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -162,45 +110,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602180459545_AddChangeLog.resx">
       <DependentUpon>201602180459545_AddChangeLog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602180548306_Test1.resx">
-      <DependentUpon>201602180548306_Test1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602180605481_Test2.resx">
-      <DependentUpon>201602180605481_Test2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602190006006_TEst3.resx">
-      <DependentUpon>201602190006006_TEst3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602190018490_T1.resx">
-      <DependentUpon>201602190018490_T1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602190140072_t2.resx">
-      <DependentUpon>201602190140072_t2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602190221327_t21.resx">
-      <DependentUpon>201602190221327_t21.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602190222278_t3.resx">
-      <DependentUpon>201602190222278_t3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602190230535_t4.resx">
-      <DependentUpon>201602190230535_t4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602190423354_t41.resx">
-      <DependentUpon>201602190423354_t41.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603110424497_t5.resx">
-      <DependentUpon>201603110424497_t5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603120505133_t6.resx">
-      <DependentUpon>201603120505133_t6.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603120517352_t7.resx">
-      <DependentUpon>201603120517352_t7.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603210214209_t8.resx">
-      <DependentUpon>201603210214209_t8.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

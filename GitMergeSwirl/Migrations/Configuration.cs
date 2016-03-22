@@ -8,6 +8,8 @@ namespace DevOps.GitMergeSwirl.Migrations
         {
             AutomaticMigrationsEnabled = true;
             ContextKey = "GitMerge Migrations";
+            AutomaticMigrationDataLossAllowed = true;
+
         }
 
         protected override void Seed(DataModel.BranchContext context)

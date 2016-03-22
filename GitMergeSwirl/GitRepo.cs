@@ -1,28 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.Infrastructure;
-using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using LibGit2Sharp;
 
 namespace DevOps.GitMergeSwirl
 {
     public class GitRepo
     {
-
-        private Repository repo;
-
-
-        //private Dictionary<int, int> existingProjects; //key to id map
-        //    public List<SXBranch> Branches;
-        //        private HashSet<string> existingCommits;
+        private readonly Repository repository;
 
         public GitRepo(Config config)
         {
             try
             {
-                repo = new Repository(config.gitRepoPath);
+                repository = new Repository(config.gitRepoPath);
             }
             catch (Exception)
             {
@@ -31,10 +23,11 @@ namespace DevOps.GitMergeSwirl
             }
         }
 
+        // Get the Git Branches from the repository and pack the object into our model of an branch. 
         public List<DataModel.Branch> GetBranches()
         {
-            var gb = new List<DataModel.Branch>();
-            foreach (var branch in repo.Branches)
+            var gitBranches = new List<DataModel.Branch>();
+            foreach (var branch in repository.Branches)
             {
                 var b = new DataModel.Branch
                 {
@@ -44,45 +37,17 @@ namespace DevOps.GitMergeSwirl
                 };
                 // Last Commit
                 b.ShaTip = b.GitCommit.Sha;
-
                 b.BranchType = DataModel.SetBranchType(b.CanonicalName);
-
-                gb.Add(b);
-                //          Branches.Add(new SXBranch(branch));
-                //var temp = branch.CanonicalName;
-                //var t2 = branch.FriendlyName;
-                //var t3 = branch.Tip;
-                //var id = t3.Sha;
-                //var t = t3.Tree;
-                //var c = branch.Commits;
+                gitBranches.Add(b);
             }
 
             // limit to only Release and Private for now
-            var wantedBranches = gb.Where(s => s.BranchType == DataModel.BranchType.Private || s.BranchType == DataModel.BranchType.Release).ToList();
-
+            var wantedBranches = gitBranches.Where(b => b.BranchType == DataModel.BranchType.Private || b.BranchType == DataModel.BranchType.Release).ToList();
             return wantedBranches;
         }
 
-        public void GetReleaseBranchParentForPrivateBranch(Commit commit, List<Commit> releasesCommits)
+        public async Task<bool> FindReleaseParentForPrivateBranchAsync(DataModel.Branch privateBranch, List<DataModel.Branch> releaseBranches)
         {
-            // repo.ObjectDatabase.FindMergeBase(commit, releasesCommits);
-
-            releasesCommits.Add(commit);
-            var c = repo.ObjectDatabase.FindMergeBase(releasesCommits, MergeBaseFindingStrategy.Octopus);
-            //    foreach (SXBranch sxBranch in Branches)
-            {
-
-            }
-        }
-
-        public void FindReleaseParentForPrivateBranch(DataModel.Branch privateBranch, List<DataModel.Branch> releaseBranches)
-        {
-            // This funcations takes time .. limit usage
-            // I also want the as Async await
-
-           
-        //    var commitLog = repo.Commits;
-
             if (privateBranch.ToReleaseBranch == null)
             {
                 privateBranch.ToReleaseBranch = new List<DataModel.PrivateBranchToReleaseBranchMapping>();
@@ -91,7 +56,7 @@ namespace DevOps.GitMergeSwirl
             // Test for each branch in the test set (All Release branches)
             foreach (var releaseBranch in releaseBranches)
             {
-
+                // Check to see if the test has already been done, and skip 
                 var test = privateBranch.ToReleaseBranch.FirstOrDefault(r => r.ReleaseBranchCanonicalName == releaseBranch.CanonicalName);
                 if (test != null)
                 {
@@ -107,7 +72,8 @@ namespace DevOps.GitMergeSwirl
                 {
                     test = new DataModel.PrivateBranchToReleaseBranchMapping
                     {
-                        //   BaseCommit = repo.ObjectDatabase.FindMergeBase(privateBranch.GitCommit, releaseBranch.GitCommit),
+                        // Short cut (may be) if the base Commit has the same hash as a release branch then that is what branch its from 
+                        //   BaseCommit = repository.ObjectDatabase.FindMergeBase(privateBranch.GitCommit, releaseBranch.GitCommit),
                         PrivateBranchCanonicalName = privateBranch.CanonicalName,
                         ReleaseBranchCanonicalName = releaseBranch.CanonicalName,
                         PrivateBranchSha = privateBranch.ShaTip,
@@ -115,55 +81,20 @@ namespace DevOps.GitMergeSwirl
                         BranchType = DataModel.SetBranchType(privateBranch.CanonicalName)
                     };
                 }
-
                 test.RecordUpdate = true;
 
                 var pBranch = privateBranch.GitBranch;
 
-                // This Test May not be correct,  TODO Test what should be done here.
-                // var div = repo.ObjectDatabase.CalculateHistoryDivergence(pBranch.Tip, b.BaseCommit);
-                var div = repo.ObjectDatabase.CalculateHistoryDivergence(pBranch.Tip, releaseBranch.GitCommit);
+                // Get the Commit difference between the release commit and this branch commit
+                // This takes time so call with the await operator
+                var div = await Task.Run(() => repository.ObjectDatabase.CalculateHistoryDivergence(pBranch.Tip, releaseBranch.GitCommit));
                 test.Ahead = div.AheadBy;
                 test.Behind = div.BehindBy;
 
-
-                // Testing if we should look at the base commit instead
-                test.BaseCommit = repo.ObjectDatabase.FindMergeBase(privateBranch.GitCommit, releaseBranch.GitCommit);
-                test.BaseCommitSha = test.BaseCommit.Sha;
-                var divbase = repo.ObjectDatabase.CalculateHistoryDivergence(pBranch.Tip, test.BaseCommit);
-                test.BaseAhead = divbase.AheadBy;
-                test.BaseBehind = divbase.BehindBy;
                 privateBranch.ToReleaseBranch.Add(test);
             }
+            return true;
         }
     }
 
-
-
-
-    //public class SXBranch
-    //{
-    //    public BranchType BranchType { get; private set; }
-
-    //    public Branch Branch { get; private set; }
-    //    public string FriendlyName { get; private set; }
-    //    public string Sha { get; private set; }
-
-
-    //    public SXBranch(Branch branch)
-    //    {
-    //        Branch = branch;
-    //        FriendlyName = branch.FriendlyName;
-    //        var lastcommit = branch.Tip;
-    //        Sha = lastcommit.Sha;
-
-    //        //var r = new Regex(@"*origin/releases//*");
-    //        //var m =  r.Match(FriendlyName);
-    //        // Note this is done on the meta data so use /heads instead of /origin
-    //        if (branch.CanonicalName.Contains(@"/heads/private/")) BranchType = BranchType.Private;
-    //        else if (branch.CanonicalName.Contains(@"/heads/releases/")) BranchType = BranchType.Release;
-    //        else BranchType = BranchType.Other;
-
-    //    }
-    //}
 }

@@ -32,6 +32,7 @@
             this.btnCheckGitBranches = new System.Windows.Forms.Button();
             this.buttonClear = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnSetParnetBranch = new System.Windows.Forms.Button();
             this.bntFindParentBranch = new System.Windows.Forms.Button();
             this.btnCheckReleaseBranchState = new System.Windows.Forms.Button();
             this.btnRefreshList = new System.Windows.Forms.Button();
@@ -43,7 +44,6 @@
             this.gridViewPrivateParentBranch = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnShowParentBranch = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.btnFindParentBranch = new System.Windows.Forms.Button();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
             this.btnRunCommand = new System.Windows.Forms.Button();
@@ -55,7 +55,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.labelDBServer = new System.Windows.Forms.Label();
             this.labelUserName = new System.Windows.Forms.Label();
-            this.btnSetParnetBranch = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPageGitBranches.SuspendLayout();
@@ -110,6 +109,16 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1225, 46);
             this.panel1.TabIndex = 6;
+            // 
+            // btnSetParnetBranch
+            // 
+            this.btnSetParnetBranch.Location = new System.Drawing.Point(649, 12);
+            this.btnSetParnetBranch.Name = "btnSetParnetBranch";
+            this.btnSetParnetBranch.Size = new System.Drawing.Size(126, 23);
+            this.btnSetParnetBranch.TabIndex = 10;
+            this.btnSetParnetBranch.Text = "Set Parent Branch";
+            this.btnSetParnetBranch.UseVisualStyleBackColor = true;
+            this.btnSetParnetBranch.Click += new System.EventHandler(this.btnSetParnetBranch_Click);
             // 
             // bntFindParentBranch
             // 
@@ -210,7 +219,6 @@
             // panel2
             // 
             this.panel2.Controls.Add(this.btnShowParentBranch);
-            this.panel2.Controls.Add(this.button3);
             this.panel2.Controls.Add(this.btnFindParentBranch);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(3, 3);
@@ -227,16 +235,6 @@
             this.btnShowParentBranch.Text = "Show Parent Branch";
             this.btnShowParentBranch.UseVisualStyleBackColor = true;
             this.btnShowParentBranch.Click += new System.EventHandler(this.btnShowParentBranch_Click);
-            // 
-            // button3
-            // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(1135, 12);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 6;
-            this.button3.Text = "Sycn To DB";
-            this.button3.UseVisualStyleBackColor = true;
             // 
             // btnFindParentBranch
             // 
@@ -341,16 +339,6 @@
             this.labelUserName.TabIndex = 0;
             this.labelUserName.Text = "Domain User Name";
             // 
-            // btnSetParnetBranch
-            // 
-            this.btnSetParnetBranch.Location = new System.Drawing.Point(649, 12);
-            this.btnSetParnetBranch.Name = "btnSetParnetBranch";
-            this.btnSetParnetBranch.Size = new System.Drawing.Size(126, 23);
-            this.btnSetParnetBranch.TabIndex = 10;
-            this.btnSetParnetBranch.Text = "Set Parent Branch";
-            this.btnSetParnetBranch.UseVisualStyleBackColor = true;
-            this.btnSetParnetBranch.Click += new System.EventHandler(this.btnSetParnetBranch_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -400,7 +388,6 @@
         private System.Windows.Forms.DataGridView dataGridViewBranches;
         private System.Windows.Forms.DataGridView gridViewPrivateParentBranch;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button btnFindParentBranch;
         private System.Windows.Forms.Button bntFindParentBranch;
         private System.Windows.Forms.Button btnShowParentBranch;

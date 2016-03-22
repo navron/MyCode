@@ -65,6 +65,9 @@ namespace DevOps.GitMergeSwirl
             [NotMapped]
             public bool InDatabase { get; set; } // Is this entry in the DB
 
+            [NotMapped]
+            public bool ToRemove { get; set; } // To Remove This Entry
+
 
             //[NotMapped]
             //// Flag this record 
@@ -92,42 +95,43 @@ namespace DevOps.GitMergeSwirl
                 //   RemovedFromDatabase = false;
                 NewCommitsOnBranch = false;
                 //    RecordChanged = false;
+                ToRemove = false;
             }
 
            
-            public bool IsEqual(Branch other)
-            {
-                if (other.ToReleaseBranch != null)
-                {
-                    var test = other.ToReleaseBranch.Any(r => r.RecordUpdate == true);
-                    if (test) return false;
-                }
+            //public bool IsEqual(Branch other)
+            //{
+            //    if (other.ToReleaseBranch != null)
+            //    {
+            //        var test = other.ToReleaseBranch.Any(r => r.RecordUpdate == true);
+            //        if (test) return false;
+            //    }
 
-                return string.Equals(CanonicalName, other.CanonicalName) &&
-                       string.Equals(ShaTip, other.ShaTip) &&
-                       string.Equals(ReleaseParentCanonicalName, other.ReleaseParentCanonicalName) &&
-                       string.Equals(ReleaseParentSha, other.ReleaseParentSha) ;
-                // Equals(Commits, other.Commits) &&
-                // BranchType == other.BranchType && MergedTested == other.MergedTested &&
-                // Equals(ToReleaseBranch, other.ToReleaseBranch) &&
-                // NewCommitsOnBranch == other.NewCommitsOnBranch &&
-                // InDatabase == other.InDatabase && 
-                // Equals(GitBranch, other.GitBranch) &&
-                // Equals(GitCommit, other.GitCommit);
-            }
+            //    return string.Equals(CanonicalName, other.CanonicalName) &&
+            //           string.Equals(ShaTip, other.ShaTip) &&
+            //           string.Equals(ReleaseParentCanonicalName, other.ReleaseParentCanonicalName) &&
+            //           string.Equals(ReleaseParentSha, other.ReleaseParentSha) ;
+            //    // Equals(Commits, other.Commits) &&
+            //    // BranchType == other.BranchType && MergedTested == other.MergedTested &&
+            //    // Equals(ToReleaseBranch, other.ToReleaseBranch) &&
+            //    // NewCommitsOnBranch == other.NewCommitsOnBranch &&
+            //    // InDatabase == other.InDatabase && 
+            //    // Equals(GitBranch, other.GitBranch) &&
+            //    // Equals(GitCommit, other.GitCommit);
+            //}
 
             
-                // What shoudl this mehtod be call, standard
-            public void AssignValue(Branch branch)
-            {
-                this.ShaTip = branch.ShaTip;
-                this.ReleaseParentCanonicalName = branch.ReleaseParentCanonicalName;
-                this.ReleaseParentSha = branch.ReleaseParentSha;
-                // this.Commits // Not this one 
-                this.MergedTested = branch.MergedTested;
-                this.ToReleaseBranch = branch.ToReleaseBranch;
+            //    // What should this method be call, standard
+            //public void AssignValue(Branch branch)
+            //{
+            //    this.ShaTip = branch.ShaTip;
+            //    this.ReleaseParentCanonicalName = branch.ReleaseParentCanonicalName;
+            //    this.ReleaseParentSha = branch.ReleaseParentSha;
+            //    // this.Commits // Not this one 
+            //    this.MergedTested = branch.MergedTested;
+            //    this.ToReleaseBranch = branch.ToReleaseBranch;
 
-            }
+            //}
         }
 
         public class BranchCommit
@@ -148,7 +152,7 @@ namespace DevOps.GitMergeSwirl
         ///     Class is used to determine the parent of the private branch
         ///     Class is used to determine that the release branch are in correct mapping order as per the ReleaseParent Class.
         /// </remarks>
-        public class PrivateBranchToReleaseBranchMapping : IComparable
+        public class PrivateBranchToReleaseBranchMapping
         {
             // Primary Key (both private and release branch)
             [Key]
@@ -174,15 +178,11 @@ namespace DevOps.GitMergeSwirl
 
             // This is the commit that is most common to both branches,
             // If the SHA1 is the same as an release branch then the private branch is from a clean branch off the release branch
-            public string BaseCommitSha { get; set; }
-            [NotMapped]
-            public LibGit2Sharp.Commit BaseCommit { get; set; }
+            // public string BaseCommitSha { get; set; }
+           // [NotMapped]
+           // public LibGit2Sharp.Commit BaseCommit { get; set; }
 
-
-            public int? BaseAhead { get; set; }
-            public int? BaseBehind { get; set; }
-
-
+            
             // Release or Private -- Used to limit data sets
             public BranchType BranchType { get; set; }
 
@@ -191,22 +191,22 @@ namespace DevOps.GitMergeSwirl
                 RecordUpdate = false;
             }
 
-            public int CompareTo(object obj)
-            {
-                var other = (PrivateBranchToReleaseBranchMapping) obj;
-                if(! (Ahead.HasValue && Behind.HasValue &&
-                    other.Ahead.HasValue && other.Behind.HasValue))
-                {
-                    return 0;
-                }
+        }
 
-                if (Ahead == other.Ahead)
-                {
-                    return Behind.Value.CompareTo(other.Behind.Value);
-                }
-                return Ahead.Value.CompareTo(other.Ahead.Value);
+        public class PrivateBranchToReleaseBranchMappingComparer : IComparer<PrivateBranchToReleaseBranchMapping>
+        {
+            public int Compare(PrivateBranchToReleaseBranchMapping x, PrivateBranchToReleaseBranchMapping y)
+            {
+                // If values are Null, then that item is last in the list, This is for shorting the compare when FindReleaseParentForPrivateBranch step are skip due to extract matches
+
+                if (!x.Ahead.HasValue || !x.Behind.HasValue) return 1;
+                if (!y.Ahead.HasValue || !y.Behind.HasValue) return 1;
+
+                // If the Ahead values are the same then return based on the behind values
+                return x.Ahead == y.Ahead ? x.Behind.Value.CompareTo(y.Behind.Value) : x.Ahead.Value.CompareTo(y.Ahead.Value);
             }
         }
+
 
         /// <summary>
         /// Release Branch to Release Parent Mapping

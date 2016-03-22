@@ -15,7 +15,7 @@ namespace DevOps.GitMergeSwirl
         public MainForm()
         {
             InitializeComponent();
-            runner = MainRunner.Instance;
+            runner = new MainRunner();
 
             // This show all the column names with no data
             dataGridViewBranches.DataSource = runner.WorkingBranchList;
@@ -34,13 +34,14 @@ namespace DevOps.GitMergeSwirl
 
         private void btnCheckGitBranches_Click(object sender, EventArgs e)
         {
-            MainRunner.Instance.SyncGitAndDBToMemory();
+            runner.SyncGitAndDBToMemory();
             btnRefreshBranchList_Click(null, null);
         }
 
         private void btnRefreshBranchList_Click(object sender, EventArgs e)
         {
             dataGridViewBranches.DataSource = runner.WorkingBranchList;
+            Console.WriteLine($"Refresh List #:{runner.WorkingBranchList.Count}");
         }
 
         private void btnSycnGitBranchesToDB_Click(object sender, EventArgs e)
@@ -48,14 +49,14 @@ namespace DevOps.GitMergeSwirl
             runner.SyncInMemoryResultsToDB();
         }
 
-        private void bntFindParentBranch_Click(object sender, EventArgs e)
+        private async void bntFindParentBranch_Click(object sender, EventArgs e)
         {
 
             for (int index = 0; index < dataGridViewBranches.SelectedRows.Count; index++)
             {
                 var selectedRow = dataGridViewBranches.SelectedRows[index];
                 var branch = (DataModel.Branch)selectedRow.DataBoundItem;
-                runner.FindBranchParents(branch);
+                await runner.FindBranchParents(branch);
             }
         }
 
@@ -64,32 +65,23 @@ namespace DevOps.GitMergeSwirl
 
         #region TabPagParentBranchStatus
 
-        private void btnFindParentBranch_Click(object sender, EventArgs e)
+        private async void btnFindParentBranch_Click(object sender, EventArgs e)
         {
             foreach (var branch in runner.WorkingBranchList)
             {
-                runner.FindBranchParents(branch);
+                await runner.FindBranchParents(branch);
             }
-            
+
 
             btnShowParentBranch_Click(null, null);
 
         }
         #endregion
 
-        private void buttonSHowBranchs_Click(object sender, EventArgs e)
-        {
-            //foreach (var b in MainRunner.Instance.TheList)
-            //{
-            //    var t = $"R:{b.BranchType} Name:{b.CanonicalName}";
-            //    tbLog.AppendText(t + Environment.NewLine);
-            //}
-        }
-
-
-
         private void btnShowParentBranch_Click(object sender, EventArgs e)
         {
+            // build a list from the working branch list. 
+            // Would love to use a tree view (soon)
             List<DataModel.PrivateBranchToReleaseBranchMapping> parentList = new List<DataModel.PrivateBranchToReleaseBranchMapping>();
 
             foreach (var branch in runner.WorkingBranchList)
@@ -99,8 +91,6 @@ namespace DevOps.GitMergeSwirl
                     parentList.AddRange(branch.ToReleaseBranch);
                 }
             }
-
-
             gridViewPrivateParentBranch.DataSource = parentList;
         }
 
@@ -112,18 +102,30 @@ namespace DevOps.GitMergeSwirl
 
     public class ControlWriter : TextWriter
     {
-        private readonly Control textbox;
-        public ControlWriter(Control textbox)
+        private readonly StringBuilder buffer;
+        private readonly TextBox textbox;
+        public ControlWriter(TextBox textbox)
         {
+            buffer = new StringBuilder();
             this.textbox = textbox;
         }
 
         public override void Write(char value)
         {
-            textbox.Text += value;
+            // Cheap shot to only write when the string ends
+            // Note should check last char for \r and current char for \n, but just \r work for this program
+            if (value == '\r')
+            {
+                textbox.AppendText(buffer + Environment.NewLine);
+                buffer.Clear();
+            }
+            else
+            {
+                buffer.Append(value);
+            }
         }
 
-        public override void Write(string value)
+        public override void Write(string value) // method is not used by this program
         {
             textbox.Text += value;
         }
