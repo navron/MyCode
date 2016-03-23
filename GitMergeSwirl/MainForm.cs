@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -58,19 +59,27 @@ namespace DevOps.GitMergeSwirl
             }
         }
 
+        private void btnSetParnetBranch_Click(object sender, EventArgs e)
+        {
+            runner.SetParentBranch();
+        }
+
+
         #endregion
 
         #region TabPagParentBranchStatus
 
         private async void btnFindParentBranch_Click(object sender, EventArgs e)
         {
+            var watch = Stopwatch.StartNew();
             foreach (var branch in runner.WorkingBranchList)
             {
                 await runner.FindBranchParents(branch);
             }
             btnShowParentBranch_Click(null, null);
+            Console.WriteLine($"FindReleaseParentForPrivateBranch:{watch.Elapsed} Count:{runner.WorkingBranchList.Count}");
         }
-        #endregion
+        
 
         private void btnShowParentBranch_Click(object sender, EventArgs e)
         {
@@ -88,10 +97,7 @@ namespace DevOps.GitMergeSwirl
             gridViewPrivateParentBranch.DataSource = parentList;
         }
 
-        private void btnSetParnetBranch_Click(object sender, EventArgs e)
-        {
-            runner.SetParentBranch();
-        }
+        #endregion
     }
 
     public class ControlWriter : TextWriter
