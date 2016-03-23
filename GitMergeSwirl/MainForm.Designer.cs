@@ -1,11 +1,14 @@
-﻿namespace DevOps.GitMergeSwirl
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace DevOps.GitMergeSwirl
 {
     partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -39,7 +42,7 @@
             this.btnSaveGitInfoToDB = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPageGitBranches = new System.Windows.Forms.TabPage();
-            this.dataGridViewBranches = new System.Windows.Forms.DataGridView();
+            this.gridViewBranches = new System.Windows.Forms.DataGridView();
             this.tabPageParnetBranch = new System.Windows.Forms.TabPage();
             this.gridViewPrivateParentBranch = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -58,7 +61,7 @@
             this.panel1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPageGitBranches.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBranches)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewBranches)).BeginInit();
             this.tabPageParnetBranch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewPrivateParentBranch)).BeginInit();
             this.panel2.SuspendLayout();
@@ -174,7 +177,7 @@
             // 
             // tabPageGitBranches
             // 
-            this.tabPageGitBranches.Controls.Add(this.dataGridViewBranches);
+            this.tabPageGitBranches.Controls.Add(this.gridViewBranches);
             this.tabPageGitBranches.Controls.Add(this.panel1);
             this.tabPageGitBranches.Location = new System.Drawing.Point(4, 22);
             this.tabPageGitBranches.Name = "tabPageGitBranches";
@@ -184,15 +187,15 @@
             this.tabPageGitBranches.Text = "Git Branches";
             this.tabPageGitBranches.UseVisualStyleBackColor = true;
             // 
-            // dataGridViewBranches
+            // gridViewBranches
             // 
-            this.dataGridViewBranches.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewBranches.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridViewBranches.Location = new System.Drawing.Point(3, 49);
-            this.dataGridViewBranches.Name = "dataGridViewBranches";
-            this.dataGridViewBranches.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewBranches.Size = new System.Drawing.Size(1225, 493);
-            this.dataGridViewBranches.TabIndex = 8;
+            this.gridViewBranches.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridViewBranches.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridViewBranches.Location = new System.Drawing.Point(3, 49);
+            this.gridViewBranches.Name = "gridViewBranches";
+            this.gridViewBranches.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.gridViewBranches.Size = new System.Drawing.Size(1225, 493);
+            this.gridViewBranches.TabIndex = 8;
             // 
             // tabPageParnetBranch
             // 
@@ -352,7 +355,7 @@
             this.panel1.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
             this.tabPageGitBranches.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBranches)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewBranches)).EndInit();
             this.tabPageParnetBranch.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridViewPrivateParentBranch)).EndInit();
             this.panel2.ResumeLayout(false);
@@ -365,33 +368,33 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox tbLog;
-        private System.Windows.Forms.Button btnCheckGitBranches;
-        private System.Windows.Forms.Button buttonClear;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button btnSaveGitInfoToDB;
-        private System.Windows.Forms.Button btnRefreshList;
-        private System.Windows.Forms.Button btnCheckReleaseBranchState;
-        private System.Windows.Forms.TabControl tabControl;
-        private System.Windows.Forms.TabPage tabPageGitBranches;
-        private System.Windows.Forms.TabPage tabPageParnetBranch;
-        private System.Windows.Forms.TabPage tabPageSettings;
-        private System.Windows.Forms.TextBox tbRunCommand;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox tbDatabaseServer;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label labelDBServer;
-        private System.Windows.Forms.Label labelUserName;
-        private System.Windows.Forms.Button btnRunCommand;
-        private System.Windows.Forms.DataGridView dataGridViewBranches;
-        private System.Windows.Forms.DataGridView gridViewPrivateParentBranch;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button btnFindParentBranch;
-        private System.Windows.Forms.Button bntFindParentBranch;
-        private System.Windows.Forms.Button btnShowParentBranch;
-        private System.Windows.Forms.Button btnSetParnetBranch;
+        private TextBox tbLog;
+        private Button btnCheckGitBranches;
+        private Button buttonClear;
+        private Panel panel1;
+        private Button btnSaveGitInfoToDB;
+        private Button btnRefreshList;
+        private Button btnCheckReleaseBranchState;
+        private TabControl tabControl;
+        private TabPage tabPageGitBranches;
+        private TabPage tabPageParnetBranch;
+        private TabPage tabPageSettings;
+        private TextBox tbRunCommand;
+        private TextBox textBox3;
+        private TextBox tbDatabaseServer;
+        private TextBox textBox1;
+        private Label label3;
+        private Label label4;
+        private Label labelDBServer;
+        private Label labelUserName;
+        private Button btnRunCommand;
+        private DataGridView gridViewBranches;
+        private DataGridView gridViewPrivateParentBranch;
+        private Panel panel2;
+        private Button btnFindParentBranch;
+        private Button bntFindParentBranch;
+        private Button btnShowParentBranch;
+        private Button btnSetParnetBranch;
     }
 }
 

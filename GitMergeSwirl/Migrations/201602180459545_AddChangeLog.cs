@@ -10,10 +10,10 @@ namespace DevOps.GitMergeSwirl.Migrations
                 "dbo.ChangeLogs",
                 c => new
                     {
-                        ChangeId = c.Int(nullable: false, identity: true),
+                        ChangeId = c.Int(false, true),
                         Who = c.String(),
-                        When = c.DateTime(nullable: false),
-                        What = c.String(),
+                        When = c.DateTime(false),
+                        What = c.String()
                     })
                 .PrimaryKey(t => t.ChangeId);
             

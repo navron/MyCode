@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
-using System.Linq;
+using LibGit2Sharp;
 
 namespace DevOps.GitMergeSwirl
 {
@@ -25,19 +26,17 @@ namespace DevOps.GitMergeSwirl
             public DbSet<BranchCommit> BranchCommits { get; set; }
             public DbSet<BranchMergeTest> BranchMergeTests { get; set; }
             public DbSet<BranchMergeTestResult> BranchMergeTestResults { get; set; }
-            public DbSet<ReleaseParentMapping> ReleaseParentMappings { get; set; }
+            public DbSet<ReleaseMapping> ReleaseParentMappings { get; set; }
             public DbSet<ChangeLog> ChangeLogs { get; set; }
 
-            public DbSet<PrivateBranchToReleaseBranchMapping> PrivateBranchToReleaseBranchMappings { get; set; }
-
-
+            public DbSet<PrivateToReleaseMapping> PrivateToReleaseMappings { get; set; }
         }
 
         /// <summary>
         /// Model of private and release branches
         /// </summary>
         /// <remarks> Single entry per branch</remarks>
-        public class Branch //: IComparable
+        public class Branch
         {
             // Full name of an git branch, case sensitive, (git is non case sensitive, company policy is enforce case sensitive in branch names)
             [Key]
@@ -52,7 +51,7 @@ namespace DevOps.GitMergeSwirl
             public bool MergedTested { get; set; }
 
             // just change to virtual
-            public virtual List<PrivateBranchToReleaseBranchMapping> ToReleaseBranch { get; set; }
+            public virtual List<PrivateToReleaseMapping> ToReleaseBranch { get; set; }
 
             public virtual List<BranchCommit> Commits { get; set; }
 
@@ -79,14 +78,14 @@ namespace DevOps.GitMergeSwirl
             // public bool RemovedFromDatabase { get; set; }
 
             // Reference to the Git Repo Branch Object
-            [System.ComponentModel.Browsable(false)] // DataGridView Hide Value
+            [Browsable(false)] // DataGridView Hide Value
             [NotMapped]
             public LibGit2Sharp.Branch GitBranch { get; set; }
 
             // reference to the Git Repo Commit Object
-            [System.ComponentModel.Browsable(false)] // DataGridView Hide Value
+            [Browsable(false)] // DataGridView Hide Value
             [NotMapped]
-            public LibGit2Sharp.Commit GitCommit { get; set; }
+            public Commit GitCommit { get; set; }
 
 
             public Branch()
@@ -97,41 +96,6 @@ namespace DevOps.GitMergeSwirl
                 //    RecordChanged = false;
                 ToRemove = false;
             }
-
-           
-            //public bool IsEqual(Branch other)
-            //{
-            //    if (other.ToReleaseBranch != null)
-            //    {
-            //        var test = other.ToReleaseBranch.Any(r => r.RecordUpdate == true);
-            //        if (test) return false;
-            //    }
-
-            //    return string.Equals(CanonicalName, other.CanonicalName) &&
-            //           string.Equals(ShaTip, other.ShaTip) &&
-            //           string.Equals(ReleaseParentCanonicalName, other.ReleaseParentCanonicalName) &&
-            //           string.Equals(ReleaseParentSha, other.ReleaseParentSha) ;
-            //    // Equals(Commits, other.Commits) &&
-            //    // BranchType == other.BranchType && MergedTested == other.MergedTested &&
-            //    // Equals(ToReleaseBranch, other.ToReleaseBranch) &&
-            //    // NewCommitsOnBranch == other.NewCommitsOnBranch &&
-            //    // InDatabase == other.InDatabase && 
-            //    // Equals(GitBranch, other.GitBranch) &&
-            //    // Equals(GitCommit, other.GitCommit);
-            //}
-
-            
-            //    // What should this method be call, standard
-            //public void AssignValue(Branch branch)
-            //{
-            //    this.ShaTip = branch.ShaTip;
-            //    this.ReleaseParentCanonicalName = branch.ReleaseParentCanonicalName;
-            //    this.ReleaseParentSha = branch.ReleaseParentSha;
-            //    // this.Commits // Not this one 
-            //    this.MergedTested = branch.MergedTested;
-            //    this.ToReleaseBranch = branch.ToReleaseBranch;
-
-            //}
         }
 
         public class BranchCommit
@@ -152,25 +116,22 @@ namespace DevOps.GitMergeSwirl
         ///     Class is used to determine the parent of the private branch
         ///     Class is used to determine that the release branch are in correct mapping order as per the ReleaseParent Class.
         /// </remarks>
-        public class PrivateBranchToReleaseBranchMapping
+        public class PrivateToReleaseMapping
         {
             // Primary Key (both private and release branch)
             [Key]
             [Column(Order = 1)]
             public string PrivateBranchCanonicalName { get; set; } // Git Friendly Name
+            public string PrivateBranchSha { get; set; }
 
             // All Release Branches mapping back to the primary
             [Key]
             [Column(Order = 2)]
             public string ReleaseBranchCanonicalName { get; set; } // Git Friendly Name
-
-            public string PrivateBranchSha { get; set; }
-
             public string ReleaseBranchSha { get; set; }
 
             [NotMapped]
-            public bool RecordUpdate { get; set; }
-
+            public bool RecordUpdate { get; set; } // DON"T THINK THIS IS NEEDED
 
             // The ahead and behinds are used to determine which branch is the true 
             public int? Ahead { get; set; }
@@ -182,20 +143,16 @@ namespace DevOps.GitMergeSwirl
            // [NotMapped]
            // public LibGit2Sharp.Commit BaseCommit { get; set; }
 
-            
-            // Release or Private -- Used to limit data sets
-            public BranchType BranchType { get; set; }
-
-            public PrivateBranchToReleaseBranchMapping()
+            public PrivateToReleaseMapping()
             {
                 RecordUpdate = false;
             }
-
         }
 
-        public class PrivateBranchToReleaseBranchMappingComparer : IComparer<PrivateBranchToReleaseBranchMapping>
+        // Determines the which release branch is closet to the private branch and thus where the private branch was branch from
+        public class PrivateToReleaseMappingComparer : IComparer<PrivateToReleaseMapping>
         {
-            public int Compare(PrivateBranchToReleaseBranchMapping x, PrivateBranchToReleaseBranchMapping y)
+            public int Compare(PrivateToReleaseMapping x, PrivateToReleaseMapping y)
             {
                 // If values are Null, then that item is last in the list, This is for shorting the compare when FindReleaseParentForPrivateBranch step are skip due to extract matches
 
@@ -207,7 +164,6 @@ namespace DevOps.GitMergeSwirl
             }
         }
 
-
         /// <summary>
         /// Release Branch to Release Parent Mapping
         /// </summary>
@@ -218,7 +174,7 @@ namespace DevOps.GitMergeSwirl
         /// 2. Master is not store in this table (possible should be) and the Master branch is used as the last commit to, (bottom of the tree)
         ///    The Parents of Master is determined by all Releases branches that is not a Parent Release. (i.e. loose leaves)
         /// </remarks>
-        public class ReleaseParentMapping
+        public class ReleaseMapping
         {
             [Key]
             [Column(Order = 1)]
@@ -228,6 +184,10 @@ namespace DevOps.GitMergeSwirl
             [Column(Order = 2)]
             // Git Friendly Name, not the Canonical Name
             public string ParentName { get; set; }
+
+            // Name that would appear at the end of an private branch for merge reasons
+            [NotMapped]
+            public string ShortName { get; set; }
         }
 
         /// <summary>
@@ -259,18 +219,18 @@ namespace DevOps.GitMergeSwirl
         {
             Release,
             Private,
+            MergeTarget, // Special type of private branch where the name ending has dash release branch (short name) i.e.  -2014.0
             Archive,
-            MergeTest,
             Other
         }
 
-        public static BranchType SetBranchType(string branchCanonicalName)
-        {
-            if (branchCanonicalName.Contains(@"/heads/private/")) return DataModel.BranchType.Private;
-            if (branchCanonicalName.Contains(@"/heads/releases/")) return DataModel.BranchType.Release;
+        //public static BranchType SetBranchType(string branchCanonicalName)
+        //{
+        //    if (branchCanonicalName.Contains(@"/heads/releases/")) return BranchType.Release;
+        //    if (branchCanonicalName.Contains(@"/heads/private/")) return BranchType.Private;
 
-            return DataModel.BranchType.Other;
-        }
+        //    return BranchType.Other;
+        //}
 
         public class ChangeLog
         {

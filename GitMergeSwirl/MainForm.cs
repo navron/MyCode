@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -16,14 +14,15 @@ namespace DevOps.GitMergeSwirl
         {
             InitializeComponent();
             runner = new MainRunner();
+            // Make sure that the runner object is disposed
+            FormClosed += (object sender, FormClosedEventArgs e) => { runner.Dispose(); };
 
             // This show all the column names with no data
-            dataGridViewBranches.DataSource = runner.WorkingBranchList;
-            gridViewPrivateParentBranch.DataSource = new List<DataModel.PrivateBranchToReleaseBranchMapping>();
+            gridViewBranches.DataSource = runner.WorkingBranchList;
+            gridViewPrivateParentBranch.DataSource = new List<DataModel.PrivateToReleaseMapping>();
 
             Console.SetOut(new ControlWriter(tbLog));
         }
-
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
@@ -40,7 +39,7 @@ namespace DevOps.GitMergeSwirl
 
         private void btnRefreshBranchList_Click(object sender, EventArgs e)
         {
-            dataGridViewBranches.DataSource = runner.WorkingBranchList;
+            gridViewBranches.DataSource = runner.WorkingBranchList;
             Console.WriteLine($"Refresh List #:{runner.WorkingBranchList.Count}");
         }
 
@@ -51,17 +50,15 @@ namespace DevOps.GitMergeSwirl
 
         private async void bntFindParentBranch_Click(object sender, EventArgs e)
         {
-
-            for (int index = 0; index < dataGridViewBranches.SelectedRows.Count; index++)
+            for (int index = 0; index < gridViewBranches.SelectedRows.Count; index++)
             {
-                var selectedRow = dataGridViewBranches.SelectedRows[index];
+                var selectedRow = gridViewBranches.SelectedRows[index];
                 var branch = (DataModel.Branch)selectedRow.DataBoundItem;
                 await runner.FindBranchParents(branch);
             }
         }
 
         #endregion
-
 
         #region TabPagParentBranchStatus
 
@@ -71,10 +68,7 @@ namespace DevOps.GitMergeSwirl
             {
                 await runner.FindBranchParents(branch);
             }
-
-
             btnShowParentBranch_Click(null, null);
-
         }
         #endregion
 
@@ -82,7 +76,7 @@ namespace DevOps.GitMergeSwirl
         {
             // build a list from the working branch list. 
             // Would love to use a tree view (soon)
-            List<DataModel.PrivateBranchToReleaseBranchMapping> parentList = new List<DataModel.PrivateBranchToReleaseBranchMapping>();
+            List<DataModel.PrivateToReleaseMapping> parentList = new List<DataModel.PrivateToReleaseMapping>();
 
             foreach (var branch in runner.WorkingBranchList)
             {

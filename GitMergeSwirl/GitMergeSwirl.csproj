@@ -99,6 +99,10 @@
     <Compile Include="Migrations\201602180459545_AddChangeLog.Designer.cs">
       <DependentUpon>201602180459545_AddChangeLog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603230428175_t10.cs" />
+    <Compile Include="Migrations\201603230428175_t10.Designer.cs">
+      <DependentUpon>201603230428175_t10.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,6 +114,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602180459545_AddChangeLog.resx">
       <DependentUpon>201602180459545_AddChangeLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603230428175_t10.resx">
+      <DependentUpon>201603230428175_t10.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

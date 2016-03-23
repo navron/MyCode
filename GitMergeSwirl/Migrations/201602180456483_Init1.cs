@@ -10,11 +10,11 @@ namespace DevOps.GitMergeSwirl.Migrations
                 "dbo.BranchCommits",
                 c => new
                     {
-                        BranchCommitSha = c.Int(nullable: false, identity: true),
+                        BranchCommitSha = c.Int(false, true),
                         Sha = c.String(),
                         CommitComment = c.String(),
                         JiraTaskId = c.String(),
-                        Branch_CanonicalName = c.String(maxLength: 128),
+                        Branch_CanonicalName = c.String(maxLength: 128)
                     })
                 .PrimaryKey(t => t.BranchCommitSha)
                 .ForeignKey("dbo.Branches", t => t.Branch_CanonicalName)
@@ -24,16 +24,16 @@ namespace DevOps.GitMergeSwirl.Migrations
                 "dbo.Branches",
                 c => new
                     {
-                        CanonicalName = c.String(nullable: false, maxLength: 128),
+                        CanonicalName = c.String(false, 128),
                         ShaTip = c.String(),
                         ReleaseParentCanonicalName = c.String(),
                         ReleaseParentSha = c.String(),
-                        BranchType = c.Int(nullable: false),
-                        MergedTested = c.Boolean(nullable: false),
+                        BranchType = c.Int(false),
+                        MergedTested = c.Boolean(false),
                         InDatabase = c.Boolean(),
                         BeenUpdated = c.Boolean(),
                         DeleteInDatabase = c.Boolean(),
-                        Discriminator = c.String(nullable: false, maxLength: 128),
+                        Discriminator = c.String(false, 128)
                     })
                 .PrimaryKey(t => t.CanonicalName);
             
@@ -41,12 +41,12 @@ namespace DevOps.GitMergeSwirl.Migrations
                 "dbo.BranchMergeTestResults",
                 c => new
                     {
-                        TestId = c.Int(nullable: false, identity: true),
+                        TestId = c.Int(false, true),
                         ReleaseBranchCanonicalName = c.String(),
                         ReleaseBranchSha = c.String(),
                         Result = c.Boolean(),
                         ResultLog = c.String(),
-                        BranchMergeTest_CanonicalName = c.String(maxLength: 128),
+                        BranchMergeTest_CanonicalName = c.String(maxLength: 128)
                     })
                 .PrimaryKey(t => t.TestId)
                 .ForeignKey("dbo.BranchMergeTests", t => t.BranchMergeTest_CanonicalName)
@@ -56,8 +56,8 @@ namespace DevOps.GitMergeSwirl.Migrations
                 "dbo.BranchMergeTests",
                 c => new
                     {
-                        CanonicalName = c.String(nullable: false, maxLength: 128),
-                        Result = c.Boolean(),
+                        CanonicalName = c.String(false, 128),
+                        Result = c.Boolean()
                     })
                 .PrimaryKey(t => t.CanonicalName);
             
@@ -65,8 +65,8 @@ namespace DevOps.GitMergeSwirl.Migrations
                 "dbo.ReleaseParentMappings",
                 c => new
                     {
-                        ReleaseName = c.String(nullable: false, maxLength: 128),
-                        ParentName = c.String(nullable: false, maxLength: 128),
+                        ReleaseName = c.String(false, 128),
+                        ParentName = c.String(false, 128)
                     })
                 .PrimaryKey(t => new { t.ReleaseName, t.ParentName });
             
